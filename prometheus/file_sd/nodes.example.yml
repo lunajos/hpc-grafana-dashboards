@@ -1,0 +1,11 @@
+- targets:
+    - cn001.example:9100
+  labels:
+    cluster: atlas
+    node: cn001
+    partition: cpu
+    rack: r01
+    chassis: c01
+    role: compute
+    hardware_class: zen5-192c
+

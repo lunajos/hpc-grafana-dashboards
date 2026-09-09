@@ -1,0 +1,16 @@
+{
+  "annotations": {"list": []}, "editable": true, "graphTooltip": 1, "id": null,
+  "panels": [
+    {"id": 1, "type": "status-history", "title": "Maximum temperature by node", "gridPos": {"h": 15, "w": 24, "x": 0, "y": 0}, "targets": [{"refId": "A", "expr": "hpc:node_temperature_max:celsius{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"}", "legendFormat": "{{rack}} / {{node}}"}], "fieldConfig": {"defaults": {"unit": "celsius", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 70}, {"color": "orange", "value": 80}, {"color": "red", "value": 90}]}}, "overrides": []}, "options": {"showValue": "never", "rowHeight": 0.65, "colWidth": 0.9, "legend": {"showLegend": true}}},
+    {"id": 2, "type": "timeseries", "title": "Rack p95 and maximum", "gridPos": {"h": 9, "w": 12, "x": 0, "y": 15}, "targets": [{"refId": "A", "expr": "hpc:rack_temperature:p95_celsius{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"}", "legendFormat": "{{rack}} p95"}, {"refId": "B", "expr": "hpc:rack_temperature:max_celsius{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"}", "legendFormat": "{{rack}} max"}], "fieldConfig": {"defaults": {"unit": "celsius"}, "overrides": []}},
+    {"id": 3, "type": "table", "title": "Hottest nodes now", "gridPos": {"h": 9, "w": 12, "x": 12, "y": 15}, "targets": [{"refId": "A", "expr": "topk(50, hpc:node_temperature_max:celsius{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"})", "format": "table", "instant": true}], "fieldConfig": {"defaults": {"unit": "celsius"}, "overrides": []}, "options": {"showHeader": true}}
+  ],
+  "refresh": "30s", "schemaVersion": 41, "tags": ["hpc", "thermal"],
+  "templating": {"list": [
+    {"name": "cluster", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"}, "query": {"query": "label_values(hpc:node_up, cluster)"}, "includeAll": true, "multi": true, "allValue": ".*", "refresh": 1},
+    {"name": "partition", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"}, "query": {"query": "label_values(hpc:node_up{cluster=~\"$cluster\"}, partition)"}, "includeAll": true, "multi": true, "allValue": ".*", "refresh": 1},
+    {"name": "rack", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"}, "query": {"query": "label_values(hpc:node_up{cluster=~\"$cluster\",partition=~\"$partition\"}, rack)"}, "includeAll": true, "multi": true, "allValue": ".*", "refresh": 1}
+  ]},
+  "time": {"from": "now-1h", "to": "now"}, "timezone": "browser", "title": "HPC / Thermals", "uid": "hpc-thermals", "version": 1
+}
+

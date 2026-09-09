@@ -1,0 +1,70 @@
+groups:
+  - name: hpc-node-current
+    interval: 30s
+    rules:
+      - record: hpc:node_up
+        expr: max by (cluster, partition, rack, role, hardware_class, node) (up{job="node-exporter"})
+
+      - record: hpc:node_cpu_busy:ratio5m
+        expr: 1 - avg by (cluster, partition, rack, role, hardware_class, node) (rate(node_cpu_seconds_total{job="node-exporter",mode="idle"}[5m]))
+
+      - record: hpc:node_memory_used:ratio
+        expr: 1 - (node_memory_MemAvailable_bytes{job="node-exporter"} / node_memory_MemTotal_bytes{job="node-exporter"})
+
+      - record: hpc:node_load_per_cpu:ratio5m
+        expr: node_load5{job="node-exporter"} / count without (cpu, mode) (node_cpu_seconds_total{job="node-exporter",mode="idle"})
+
+      - record: hpc:node_temperature_max:celsius
+        expr: max by (cluster, partition, rack, role, hardware_class, node) (node_hwmon_temp_celsius{job="node-exporter"})
+
+      - record: hpc:node_temperature_spread:celsius
+        expr: max by (cluster, partition, rack, role, hardware_class, node) (node_hwmon_temp_celsius{job="node-exporter"}) - min by (cluster, partition, rack, role, hardware_class, node) (node_hwmon_temp_celsius{job="node-exporter"})
+
+      - record: hpc:node_network_receive:bytes_per_second5m
+        expr: sum by (cluster, partition, rack, role, hardware_class, node) (rate(node_network_receive_bytes_total{job="node-exporter",device!~"lo|veth.*|docker.*|cni.*"}[5m]))
+
+      - record: hpc:node_network_transmit:bytes_per_second5m
+        expr: sum by (cluster, partition, rack, role, hardware_class, node) (rate(node_network_transmit_bytes_total{job="node-exporter",device!~"lo|veth.*|docker.*|cni.*"}[5m]))
+
+      - record: hpc:node_network_errors:per_second5m
+        expr: sum by (cluster, partition, rack, role, hardware_class, node) (rate(node_network_receive_errs_total{job="node-exporter"}[5m]) + rate(node_network_transmit_errs_total{job="node-exporter"}[5m]))
+
+      - record: hpc:node_network_drops:per_second5m
+        expr: sum by (cluster, partition, rack, role, hardware_class, node) (rate(node_network_receive_drop_total{job="node-exporter"}[5m]) + rate(node_network_transmit_drop_total{job="node-exporter"}[5m]))
+
+      - record: hpc:node_disk_io_time:ratio5m
+        expr: max by (cluster, partition, rack, role, hardware_class, node) (rate(node_disk_io_time_seconds_total{job="node-exporter",device!~"loop.*|ram.*|dm-.*"}[5m]))
+
+      - record: hpc:node_filesystem_used:ratio
+        expr: max by (cluster, partition, rack, role, hardware_class, node) (1 - node_filesystem_avail_bytes{job="node-exporter",fstype!~"tmpfs|overlay|squashfs|nsfs"} / node_filesystem_size_bytes{job="node-exporter",fstype!~"tmpfs|overlay|squashfs|nsfs"})
+
+      - record: hpc:node_pressure_cpu_waiting:ratio5m
+        expr: rate(node_pressure_cpu_waiting_seconds_total{job="node-exporter"}[5m])
+
+      - record: hpc:node_pressure_memory_waiting:ratio5m
+        expr: rate(node_pressure_memory_waiting_seconds_total{job="node-exporter"}[5m])
+
+      - record: hpc:node_pressure_io_waiting:ratio5m
+        expr: rate(node_pressure_io_waiting_seconds_total{job="node-exporter"}[5m])
+
+      - record: hpc:node_nfs_rpc_operations:per_second5m
+        expr: sum by (cluster, partition, rack, role, hardware_class, node) (rate(node_nfs_requests_total{job="node-exporter"}[5m]))
+
+  - name: hpc-fleet-rollups
+    interval: 1m
+    rules:
+      - record: hpc:rack_temperature:p95_celsius
+        expr: quantile by (cluster, partition, rack) (0.95, hpc:node_temperature_max:celsius)
+
+      - record: hpc:rack_temperature:max_celsius
+        expr: max by (cluster, partition, rack) (hpc:node_temperature_max:celsius)
+
+      - record: hpc:partition_cpu_busy:ratio5m
+        expr: avg by (cluster, partition) (hpc:node_cpu_busy:ratio5m)
+
+      - record: hpc:partition_nodes:count
+        expr: count by (cluster, partition) (hpc:node_up)
+
+      - record: hpc:partition_nodes_up:count
+        expr: sum by (cluster, partition) (hpc:node_up)
+

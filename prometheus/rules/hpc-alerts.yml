@@ -1,0 +1,57 @@
+groups:
+  - name: hpc-node-alerts
+    rules:
+      - alert: HPCNodeDown
+        expr: hpc:node_up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HPC node {{ $labels.node }} is unreachable"
+          description: "node_exporter has been unreachable for 5 minutes in {{ $labels.cluster }}/{{ $labels.partition }}."
+
+      - alert: HPCNodeTemperatureHigh
+        expr: hpc:node_temperature_max:celsius > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HPC node {{ $labels.node }} is hot"
+          description: "Maximum reported hwmon temperature is {{ $value | humanize }} C. Override thresholds by hardware class where required."
+
+      - alert: HPCNodeTemperatureCritical
+        expr: hpc:node_temperature_max:celsius > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HPC node {{ $labels.node }} temperature is critical"
+          description: "Maximum reported hwmon temperature is {{ $value | humanize }} C."
+
+      - alert: HPCNodeNetworkErrors
+        expr: hpc:node_network_errors:per_second5m > 1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Sustained network errors on {{ $labels.node }}"
+          description: "Combined receive/transmit error rate is {{ $value | humanize }}/s."
+
+      - alert: HPCNodeFilesystemNearlyFull
+        expr: hpc:node_filesystem_used:ratio > 0.90
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Filesystem nearly full on {{ $labels.node }}"
+          description: "The fullest local filesystem is {{ $value | humanizePercentage }} used."
+
+      - alert: HPCNodeExporterCollectorFailing
+        expr: node_scrape_collector_success{job="node-exporter"} == 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "node_exporter collector {{ $labels.collector }} failing on {{ $labels.node }}"
+          description: "Collector failures can make an apparently healthy dashboard incomplete."
+
