@@ -1,0 +1,12 @@
+groups:
+  - name: hpc-slurm-node-state
+    interval: 30s
+    rules:
+      # Stable dashboard code: 0 idle, 1 allocated, 2 mixed, 3 transitional,
+      # 4 drained/maintenance, 5 down/failing, 6 unknown or site-specific.
+      - record: hpc:slurm_node_state:code
+        expr: max by (cluster, partition, node) ((0 * slurm_node_info{state="IDLE"}) or (1 * slurm_node_info{state="ALLOCATED"}) or (2 * slurm_node_info{state="MIXED"}) or (3 * slurm_node_info{state=~"COMPLETING|DRAINING|RESUME"}) or (4 * slurm_node_info{state=~"DRAINED|MAINT|POWERED_DOWN|POWER_DOWN"}) or (5 * slurm_node_info{state=~"DOWN|FAIL|FAILING|NO_RESPOND"}) or (6 * slurm_node_info{state!~"IDLE|ALLOCATED|MIXED|COMPLETING|DRAINING|RESUME|DRAINED|MAINT|POWERED_DOWN|POWER_DOWN|DOWN|FAIL|FAILING|NO_RESPOND"}))
+
+      - record: hpc:slurm_nodes_by_state:count
+        expr: count by (cluster, partition, state) (slurm_node_info)
+

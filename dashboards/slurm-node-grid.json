@@ -1,0 +1,55 @@
+{
+  "annotations": {"list": []},
+  "description": "Responsive cell-level Slurm node-state map. One node per cell, with a single fleet query.",
+  "editable": true,
+  "graphTooltip": 0,
+  "id": null,
+  "panels": [
+    {"id": 1, "type": "stat", "title": "Idle", "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0}, "targets": [{"refId": "A", "expr": "count(max by (cluster, node) (hpc:slurm_node_state:code{cluster=~\"$cluster\",partition=~\"$partition\"}) == 0)", "instant": true}], "fieldConfig": {"defaults": {"color": {"mode": "fixedColor", "fixedColor": "green"}}, "overrides": []}, "options": {"colorMode": "background", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"]}}},
+    {"id": 2, "type": "stat", "title": "Allocated", "gridPos": {"h": 4, "w": 4, "x": 4, "y": 0}, "targets": [{"refId": "A", "expr": "count(max by (cluster, node) (hpc:slurm_node_state:code{cluster=~\"$cluster\",partition=~\"$partition\"}) == 1)", "instant": true}], "fieldConfig": {"defaults": {"color": {"mode": "fixedColor", "fixedColor": "blue"}}, "overrides": []}, "options": {"colorMode": "background", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"]}}},
+    {"id": 3, "type": "stat", "title": "Mixed", "gridPos": {"h": 4, "w": 4, "x": 8, "y": 0}, "targets": [{"refId": "A", "expr": "count(max by (cluster, node) (hpc:slurm_node_state:code{cluster=~\"$cluster\",partition=~\"$partition\"}) == 2)", "instant": true}], "fieldConfig": {"defaults": {"color": {"mode": "fixedColor", "fixedColor": "semi-dark-yellow"}}, "overrides": []}, "options": {"colorMode": "background", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"]}}},
+    {"id": 4, "type": "stat", "title": "Transitioning", "gridPos": {"h": 4, "w": 4, "x": 12, "y": 0}, "targets": [{"refId": "A", "expr": "count(max by (cluster, node) (hpc:slurm_node_state:code{cluster=~\"$cluster\",partition=~\"$partition\"}) == 3)", "instant": true}], "fieldConfig": {"defaults": {"color": {"mode": "fixedColor", "fixedColor": "orange"}}, "overrides": []}, "options": {"colorMode": "background", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"]}}},
+    {"id": 5, "type": "stat", "title": "Drained / maintenance", "gridPos": {"h": 4, "w": 4, "x": 16, "y": 0}, "targets": [{"refId": "A", "expr": "count(max by (cluster, node) (hpc:slurm_node_state:code{cluster=~\"$cluster\",partition=~\"$partition\"}) == 4)", "instant": true}], "fieldConfig": {"defaults": {"color": {"mode": "fixedColor", "fixedColor": "purple"}}, "overrides": []}, "options": {"colorMode": "background", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"]}}},
+    {"id": 6, "type": "stat", "title": "Down / failing", "gridPos": {"h": 4, "w": 4, "x": 20, "y": 0}, "targets": [{"refId": "A", "expr": "count(max by (cluster, node) (hpc:slurm_node_state:code{cluster=~\"$cluster\",partition=~\"$partition\"}) == 5)", "instant": true}], "fieldConfig": {"defaults": {"color": {"mode": "fixedColor", "fixedColor": "red"}}, "overrides": []}, "options": {"colorMode": "background", "graphMode": "none", "textMode": "value", "reduceOptions": {"calcs": ["lastNotNull"]}}},
+    {
+      "id": 7,
+      "type": "stat",
+      "title": "Slurm node cells",
+      "description": "One cell per node. Color is Slurm state; click a cell to open node drill-down. The core Stat panel reflows cells with screen width while retaining a single Prometheus query.",
+      "gridPos": {"h": 28, "w": 24, "x": 0, "y": 4},
+      "targets": [{"refId": "A", "expr": "sort(max by (cluster, node) (hpc:slurm_node_state:code{cluster=~\"$cluster\",partition=~\"$partition\"}) and on (cluster, node) max by (cluster, node) (slurm_node_profile_assignment{cluster=~\"$cluster\",profile=~\"$profile\"}))", "legendFormat": "{{node}}", "instant": true}],
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "links": [{"title": "Open ${__field.name}", "url": "/d/hpc-node-drilldown?var-cluster=$cluster&var-node=${__field.name}", "targetBlank": false}],
+          "mappings": [{"type": "value", "options": {
+            "0": {"text": "IDLE", "color": "green"},
+            "1": {"text": "ALLOCATED", "color": "blue"},
+            "2": {"text": "MIXED", "color": "semi-dark-yellow"},
+            "3": {"text": "TRANSITION", "color": "orange"},
+            "4": {"text": "DRAINED", "color": "purple"},
+            "5": {"text": "DOWN", "color": "red"},
+            "6": {"text": "UNKNOWN", "color": "gray"}
+          }}],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        },
+        "overrides": []
+      },
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "percentChangeColorMode": "standard", "showPercentChange": false, "textMode": "name_and_value", "wideLayout": false, "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}}
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "tags": ["hpc", "slurm", "nodes", "grid"],
+  "templating": {"list": [
+    {"name": "cluster", "label": "Cluster", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"}, "query": {"query": "label_values(slurm_node_info, cluster)"}, "includeAll": true, "multi": true, "allValue": ".*", "refresh": 1},
+    {"name": "partition", "label": "Partition", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"}, "query": {"query": "label_values(slurm_node_info{cluster=~\"$cluster\"}, partition)"}, "includeAll": true, "multi": true, "allValue": ".*", "refresh": 1},
+    {"name": "profile", "label": "Node profile", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"}, "query": {"query": "label_values(slurm_node_profile_assignment{cluster=~\"$cluster\"}, profile)"}, "includeAll": true, "multi": true, "allValue": ".*", "refresh": 1}
+  ]},
+  "time": {"from": "now-1h", "to": "now"},
+  "timezone": "browser",
+  "title": "HPC / Slurm Node Cell Grid",
+  "uid": "hpc-slurm-node-grid",
+  "version": 1
+}
+

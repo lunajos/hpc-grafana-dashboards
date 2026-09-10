@@ -22,6 +22,19 @@ The health grid uses four stable states: healthy, warning, critical, and down.
 It combines reachability, thermals, network errors, filesystem pressure, and
 node-profile conformance instead of showing reachability alone.
 
+## Slurm node cell grid: answer “what state is every node?”
+
+Use one multi-value Stat panel with one square per node. This produces a dense,
+responsive grid—approximately 10 by 10 for 100 nodes at a suitable panel size—
+without creating one Grafana panel and Prometheus query per node. Cells use a
+stable palette: idle green, allocated blue, mixed yellow, transitioning orange,
+drained/maintenance purple, down/failing red, and unknown gray.
+
+Filter by cluster, partition, and inferred Slurm node profile. Keep node names
+visible and make each cell link to node drill-down. Grafana's built-in panel
+reflows the number of columns with browser width; an exact fixed ten-column grid
+would require a custom/plugin panel and is usually less usable across screens.
+
 ## Cluster capacity: answer “what is available?”
 
 Show CPU and physical memory as online total, currently used, and remaining.

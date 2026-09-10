@@ -10,6 +10,7 @@ drill-down rather than a single dashboard with thousands of series.
 |---|---|---|
 | Fleet overview | Is the cluster healthy right now? | 15 minutes |
 | Cluster capacity | How much CPU and memory is online, busy, and free? | 6 hours |
+| Slurm node cell grid | What state is every scheduled node in right now? | Current |
 | Thermal topology | Which nodes, racks, or sensors are hot? | 1 hour |
 | Storage and fabric | Is NFS, Ethernet, or InfiniBand the bottleneck? | 1 hour |
 | Node drill-down | Why is this particular node unhealthy? | 6 hours |
