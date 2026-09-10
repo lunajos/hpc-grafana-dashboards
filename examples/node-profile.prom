@@ -1,0 +1,11 @@
+# Deploy the appropriate file to each node exporter textfile directory.
+# TYPE hpc_node_profile_info gauge
+hpc_node_profile_info{node_profile="cpu-standard-v1",vendor="example",model="compute-gen1"} 1
+# TYPE hpc_node_profile_cpu_threads gauge
+hpc_node_profile_cpu_threads 192
+# TYPE hpc_node_profile_memory_bytes gauge
+hpc_node_profile_memory_bytes 824633720832
+# TYPE hpc_node_profile_gpu_count gauge
+hpc_node_profile_gpu_count 0
+# TYPE hpc_node_profile_local_storage_bytes gauge
+hpc_node_profile_local_storage_bytes 3840755982336

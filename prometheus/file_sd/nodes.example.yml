@@ -8,4 +8,4 @@
     chassis: c01
     role: compute
     hardware_class: zen5-192c
-
+    node_profile: cpu-standard-v1

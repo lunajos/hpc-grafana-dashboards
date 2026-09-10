@@ -18,7 +18,23 @@ errors, network errors, and InfiniBand errors. Below that:
 Every node cell and table row links to the node drill-down. Defaults: 15-minute
 range, 30-second refresh, and filters for cluster, partition, rack, and role.
 
-## 2. Thermal topology: answer “what is heating up?”
+The health grid uses four stable states: healthy, warning, critical, and down.
+It combines reachability, thermals, network errors, filesystem pressure, and
+node-profile conformance instead of showing reachability alone.
+
+## Cluster capacity: answer “what is available?”
+
+Show CPU and physical memory as online total, currently used, and remaining.
+Gauges provide the immediate ratio; time series show whether demand or available
+capacity changed; partition bars reveal where it happened. A node going down
+must reduce the online denominator, making lost capacity visible immediately.
+
+CPU “used cores” is an operational estimate: logical CPU count multiplied by
+non-idle CPU ratio. It is not scheduler allocation. Add separate allocated and
+requested gauges from the scheduler exporter so operators can distinguish
+allocated-but-idle capacity from genuinely free capacity.
+
+## Thermal topology: answer “what is heating up?”
 
 Use a **status history** panel for one row per node over time. Grafana's generic
 heatmap bins values into distributions; status history better preserves node
@@ -37,7 +53,7 @@ Panels:
 Never average all sensors for alerting. Add `hardware_class` or `model` labels so
 thresholds can differ without dashboard forks.
 
-## 3. Storage and fabric: answer “is data movement the bottleneck?”
+## Storage and fabric: answer “is data movement the bottleneck?”
 
 Organize rows by path rather than exporter:
 
@@ -55,14 +71,14 @@ Organize rows by path rather than exporter:
 Show current offender tables first, then time series. Group by rack and fabric
 device. Rates must use `rate()` over at least four scrape intervals.
 
-## 4. Node drill-down: answer “why this node?”
+## Node drill-down: answer “why this node?”
 
 One required `node` variable and no multi-select. Rows should cover identity and
 scrape health; CPU/load/PSI; memory/NUMA; thermals/power; disk/filesystem; NFS;
 Ethernet; InfiniBand; and optional GPU/scheduler context. Show raw sensor and
 device labels here because the series count is bounded to one node.
 
-## 5. Capacity and trends: answer “what should we change?”
+## Capacity and trends: answer “what should we change?”
 
 Use downsampled or recorded hourly/daily series for 7/30/90-day views:
 
@@ -74,4 +90,3 @@ Use downsampled or recorded hourly/daily series for 7/30/90-day views:
   from the scheduler exporter.
 
 This view should never query raw per-core time series across the full fleet.
-

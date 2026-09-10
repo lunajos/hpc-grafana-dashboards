@@ -46,9 +46,9 @@ rack: r01
 chassis: c03
 role: compute
 hardware_class: zen5-192c
+node_profile: cpu-standard-v1
 ```
 
 Keep `instance` as the scrape endpoint and create a stable `node` label for the
 scheduler hostname. Avoid volatile labels (job ID, username, IP allocation) on
 host metrics. The label contract is the foundation for usable heatmaps at scale.
-

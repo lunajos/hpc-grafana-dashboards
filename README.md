@@ -9,13 +9,15 @@ drill-down rather than a single dashboard with thousands of series.
 | View | Question it answers | Default time |
 |---|---|---|
 | Fleet overview | Is the cluster healthy right now? | 15 minutes |
+| Cluster capacity | How much CPU and memory is online, busy, and free? | 6 hours |
 | Thermal topology | Which nodes, racks, or sensors are hot? | 1 hour |
 | Storage and fabric | Is NFS, Ethernet, or InfiniBand the bottleneck? | 1 hour |
 | Node drill-down | Why is this particular node unhealthy? | 6 hours |
 | Capacity and trends | Are thermals, utilization, or errors getting worse? | 30 days |
 
 See [docs/information-architecture.md](docs/information-architecture.md) for the
-panel layout and [docs/metrics.md](docs/metrics.md) for exporter coverage.
+panel layout, [docs/metrics.md](docs/metrics.md) for exporter coverage, and
+[docs/node-profiles.md](docs/node-profiles.md) for expected node configurations.
 
 ## Repository layout
 
@@ -31,13 +33,15 @@ examples/                           node_exporter service configuration
 ## Quick start
 
 1. Add stable labels to every scrape target: `cluster`, `partition`, `rack`,
-   `chassis`, and `role`. Do not encode these only in hostnames.
+   `chassis`, `role`, and `node_profile`. Do not encode these only in hostnames.
 2. Deploy node_exporter 1.11.1 (the latest release when this repository was
    created) and enable the collectors shown in
    [examples/node_exporter.env](examples/node_exporter.env).
 3. Load `prometheus/rules/*.yml` from Prometheus, Thanos Ruler, or Mimir.
 4. Point Grafana provisioning at this repository and replace the datasource URL.
 5. Begin at **HPC / Fleet Overview**, then follow node links into drill-down.
+6. Deploy the appropriate `examples/node-profile.prom` variant through your
+   configuration-management system to declare expected node hardware.
 
 Validate before committing:
 
@@ -66,4 +70,3 @@ scheduler/GPU layer to avoid cardinality blow-ups.
   data and retain raw data for a shorter period.
 - Put user/job identity only on workload metrics, with access controls suitable
   for your organization.
-

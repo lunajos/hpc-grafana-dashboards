@@ -6,6 +6,7 @@
   "graphTooltip": 1,
   "id": null,
   "links": [
+    {"title": "Cluster capacity", "type": "link", "url": "/d/hpc-cluster-capacity?var-cluster=$cluster", "includeVars": false, "keepTime": true},
     {"title": "Thermals", "type": "link", "url": "/d/hpc-thermals?var-cluster=$cluster&var-partition=$partition&var-rack=$rack", "includeVars": false, "keepTime": true},
     {"title": "Storage & fabric", "type": "link", "url": "/d/hpc-storage-fabric?var-cluster=$cluster&var-partition=$partition&var-rack=$rack", "includeVars": false, "keepTime": true}
   ],
@@ -16,7 +17,7 @@
     {"id": 4, "type": "stat", "title": "Network errors/s", "gridPos": {"h": 4, "w": 4, "x": 12, "y": 0}, "targets": [{"refId": "A", "expr": "sum(hpc:node_network_errors:per_second5m{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"})", "instant": true}], "fieldConfig": {"defaults": {"unit": "ops", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}, "overrides": []}, "options": {"colorMode": "background", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}},
     {"id": 5, "type": "stat", "title": "Max filesystem used", "gridPos": {"h": 4, "w": 4, "x": 16, "y": 0}, "targets": [{"refId": "A", "expr": "max(hpc:node_filesystem_used:ratio{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"})", "instant": true}], "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []}, "options": {"colorMode": "value", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}},
     {"id": 6, "type": "stat", "title": "Memory PSI", "gridPos": {"h": 4, "w": 4, "x": 20, "y": 0}, "targets": [{"refId": "A", "expr": "max(hpc:node_pressure_memory_waiting:ratio5m{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"})", "instant": true}], "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []}, "options": {"colorMode": "value", "graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}},
-    {"id": 7, "type": "status-history", "title": "Node availability over time", "gridPos": {"h": 10, "w": 24, "x": 0, "y": 4}, "targets": [{"refId": "A", "expr": "hpc:node_up{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"}", "legendFormat": "{{rack}} / {{node}}"}], "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "DOWN", "color": "red"}, "1": {"text": "UP", "color": "green"}}}]}, "overrides": []}, "options": {"showValue": "never", "rowHeight": 0.7, "colWidth": 0.9, "legend": {"showLegend": true}}},
+    {"id": 7, "type": "status-history", "title": "Node health over time", "description": "0 healthy, 1 warning, 2 critical, 3 down. Warnings include profile drift, temperature, network errors, and filesystem pressure.", "gridPos": {"h": 10, "w": 24, "x": 0, "y": 4}, "targets": [{"refId": "A", "expr": "hpc:node_health:state{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"}", "legendFormat": "{{rack}} / {{node}} / {{node_profile}}"}], "fieldConfig": {"defaults": {"mappings": [{"type": "value", "options": {"0": {"text": "HEALTHY", "color": "green"}, "1": {"text": "WARNING", "color": "yellow"}, "2": {"text": "CRITICAL", "color": "orange"}, "3": {"text": "DOWN", "color": "red"}}}]}, "overrides": []}, "options": {"showValue": "never", "rowHeight": 0.7, "colWidth": 0.9, "legend": {"showLegend": true}}},
     {"id": 8, "type": "table", "title": "Current node offenders", "gridPos": {"h": 12, "w": 24, "x": 0, "y": 14}, "targets": [{"refId": "A", "expr": "sort_desc(hpc:node_temperature_max:celsius{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"})", "format": "table", "instant": true}, {"refId": "B", "expr": "sort_desc(hpc:node_cpu_busy:ratio5m{cluster=~\"$cluster\",partition=~\"$partition\",rack=~\"$rack\"})", "format": "table", "instant": true}], "fieldConfig": {"defaults": {}, "overrides": []}, "options": {"showHeader": true}}
   ],
   "refresh": "30s",
@@ -33,4 +34,3 @@
   "uid": "hpc-fleet-overview",
   "version": 1
 }
-

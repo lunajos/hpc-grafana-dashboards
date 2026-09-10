@@ -55,3 +55,11 @@ groups:
           summary: "node_exporter collector {{ $labels.collector }} failing on {{ $labels.node }}"
           description: "Collector failures can make an apparently healthy dashboard incomplete."
 
+      - alert: HPCNodeProfileMismatch
+        expr: hpc:node_profile_match == 0
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Node {{ $labels.node }} does not match profile {{ $labels.node_profile }}"
+          description: "Detected CPU thread count or physical memory differs from the declared node profile."
