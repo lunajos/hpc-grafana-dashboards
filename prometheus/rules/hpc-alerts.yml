@@ -47,7 +47,7 @@ groups:
           description: "The fullest local filesystem is {{ $value | humanizePercentage }} used."
 
       - alert: HPCNodeExporterCollectorFailing
-        expr: node_scrape_collector_success{job="node-exporter"} == 0
+        expr: node_scrape_collector_success == 0
         for: 15m
         labels:
           severity: warning

@@ -33,16 +33,22 @@ examples/                           node_exporter service configuration
 
 ## Quick start
 
-1. Add stable labels to every scrape target: `cluster`, `partition`, `rack`,
+1. Import **HPC / Node Exporter Fleet (Start Here)** and set `host_regex` to the
+   standard Prometheus `instance` names for the compute nodes. This dashboard
+   works without custom labels or recording rules.
+2. Add stable labels to every scrape target: `cluster`, `partition`, `rack`,
    `chassis`, `role`, and `node_profile`. Do not encode these only in hostnames.
-2. Deploy node_exporter 1.11.1 (the latest release when this repository was
+3. Deploy node_exporter 1.11.1 (the latest release when this repository was
    created) and enable the collectors shown in
    [examples/node_exporter.env](examples/node_exporter.env).
-3. Load `prometheus/rules/*.yml` from Prometheus, Thanos Ruler, or Mimir.
-4. Point Grafana provisioning at this repository and replace the datasource URL.
-5. Begin at **HPC / Fleet Overview**, then follow node links into drill-down.
+4. Load `prometheus/rules/*.yml` from Prometheus, Thanos Ruler, or Mimir before
+   using dashboards whose queries begin with `hpc:`.
+5. Point Grafana provisioning at this repository and replace the datasource URL.
 6. Deploy the appropriate `examples/node-profile.prom` variant through your
    configuration-management system to declare expected node hardware.
+
+See [docs/plain-node-exporter.md](docs/plain-node-exporter.md) for regex examples
+and a short no-data diagnostic checklist.
 
 Validate before committing:
 

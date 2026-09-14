@@ -3,70 +3,70 @@ groups:
     interval: 30s
     rules:
       - record: hpc:node_up
-        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node) (up{job="node-exporter"})
+        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (up)
 
       - record: hpc:node_cpu_logical:count
-        expr: count by (cluster, partition, rack, role, hardware_class, node_profile, node) (node_cpu_seconds_total{job="node-exporter",mode="idle"})
+        expr: count by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (node_cpu_seconds_total{mode="idle"})
 
       - record: hpc:node_memory_total:bytes
-        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node) (node_memory_MemTotal_bytes{job="node-exporter"})
+        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (node_memory_MemTotal_bytes)
 
       - record: hpc:node_memory_used:bytes
-        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node) (node_memory_MemTotal_bytes{job="node-exporter"} - node_memory_MemAvailable_bytes{job="node-exporter"})
+        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)
 
       - record: hpc:node_cpu_busy:ratio5m
-        expr: 1 - avg by (cluster, partition, rack, role, hardware_class, node_profile, node) (rate(node_cpu_seconds_total{job="node-exporter",mode="idle"}[5m]))
+        expr: 1 - avg by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))
 
       - record: hpc:node_memory_used:ratio
-        expr: 1 - (node_memory_MemAvailable_bytes{job="node-exporter"} / node_memory_MemTotal_bytes{job="node-exporter"})
+        expr: 1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)
 
       - record: hpc:node_load_per_cpu:ratio5m
-        expr: node_load5{job="node-exporter"} / count without (cpu, mode) (node_cpu_seconds_total{job="node-exporter",mode="idle"})
+        expr: node_load5 / count without (cpu, mode) (node_cpu_seconds_total{mode="idle"})
 
       - record: hpc:node_temperature_max:celsius
-        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node) (node_hwmon_temp_celsius{job="node-exporter"})
+        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (node_hwmon_temp_celsius)
 
       - record: hpc:node_temperature_spread:celsius
-        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node) (node_hwmon_temp_celsius{job="node-exporter"}) - min by (cluster, partition, rack, role, hardware_class, node_profile, node) (node_hwmon_temp_celsius{job="node-exporter"})
+        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (node_hwmon_temp_celsius) - min by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (node_hwmon_temp_celsius)
 
       - record: hpc:node_network_receive:bytes_per_second5m
-        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node) (rate(node_network_receive_bytes_total{job="node-exporter",device!~"lo|veth.*|docker.*|cni.*"}[5m]))
+        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (rate(node_network_receive_bytes_total{device!~"lo|veth.*|docker.*|cni.*"}[5m]))
 
       - record: hpc:node_network_transmit:bytes_per_second5m
-        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node) (rate(node_network_transmit_bytes_total{job="node-exporter",device!~"lo|veth.*|docker.*|cni.*"}[5m]))
+        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (rate(node_network_transmit_bytes_total{device!~"lo|veth.*|docker.*|cni.*"}[5m]))
 
       - record: hpc:node_network_errors:per_second5m
-        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node) (rate(node_network_receive_errs_total{job="node-exporter"}[5m]) + rate(node_network_transmit_errs_total{job="node-exporter"}[5m]))
+        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (rate(node_network_receive_errs_total[5m]) + rate(node_network_transmit_errs_total[5m]))
 
       - record: hpc:node_network_drops:per_second5m
-        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node) (rate(node_network_receive_drop_total{job="node-exporter"}[5m]) + rate(node_network_transmit_drop_total{job="node-exporter"}[5m]))
+        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (rate(node_network_receive_drop_total[5m]) + rate(node_network_transmit_drop_total[5m]))
 
       - record: hpc:node_disk_io_time:ratio5m
-        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node) (rate(node_disk_io_time_seconds_total{job="node-exporter",device!~"loop.*|ram.*|dm-.*"}[5m]))
+        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (rate(node_disk_io_time_seconds_total{device!~"loop.*|ram.*|dm-.*"}[5m]))
 
       - record: hpc:node_filesystem_used:ratio
-        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node) (1 - node_filesystem_avail_bytes{job="node-exporter",fstype!~"tmpfs|overlay|squashfs|nsfs"} / node_filesystem_size_bytes{job="node-exporter",fstype!~"tmpfs|overlay|squashfs|nsfs"})
+        expr: max by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (1 - node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs|nsfs"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs|nsfs"})
 
       - record: hpc:node_pressure_cpu_waiting:ratio5m
-        expr: rate(node_pressure_cpu_waiting_seconds_total{job="node-exporter"}[5m])
+        expr: rate(node_pressure_cpu_waiting_seconds_total[5m])
 
       - record: hpc:node_pressure_memory_waiting:ratio5m
-        expr: rate(node_pressure_memory_waiting_seconds_total{job="node-exporter"}[5m])
+        expr: rate(node_pressure_memory_waiting_seconds_total[5m])
 
       - record: hpc:node_pressure_io_waiting:ratio5m
-        expr: rate(node_pressure_io_waiting_seconds_total{job="node-exporter"}[5m])
+        expr: rate(node_pressure_io_waiting_seconds_total[5m])
 
       - record: hpc:node_nfs_rpc_operations:per_second5m
-        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node) (rate(node_nfs_requests_total{job="node-exporter"}[5m]))
+        expr: sum by (cluster, partition, rack, role, hardware_class, node_profile, node, instance) (rate(node_nfs_requests_total[5m]))
 
       - record: hpc:node_cpu_profile_match
-        expr: hpc:node_cpu_logical:count == bool on (cluster, node) hpc_node_profile_cpu_threads{job="node-exporter"}
+        expr: hpc:node_cpu_logical:count == bool on (instance) hpc_node_profile_cpu_threads
 
       - record: hpc:node_memory_profile_match
-        expr: (abs(hpc:node_memory_total:bytes - on (cluster, node) hpc_node_profile_memory_bytes{job="node-exporter"}) / on (cluster, node) hpc_node_profile_memory_bytes{job="node-exporter"}) <= bool 0.02
+        expr: (abs(hpc:node_memory_total:bytes - on (instance) hpc_node_profile_memory_bytes) / on (instance) hpc_node_profile_memory_bytes) <= bool 0.02
 
       - record: hpc:node_profile_match
-        expr: hpc:node_cpu_profile_match * on (cluster, node) hpc:node_memory_profile_match
+        expr: hpc:node_cpu_profile_match * on (instance) hpc:node_memory_profile_match
 
       # State: 0 healthy, 1 warning, 2 critical, 3 down. The extra `reason`
       # label makes each condition a distinct series before max removes it.
@@ -92,25 +92,25 @@ groups:
         expr: sum by (cluster, partition) (hpc:node_up)
 
       - record: hpc:cluster_cpu_total:cores
-        expr: sum by (cluster) (hpc:node_cpu_logical:count * on (cluster, node) (hpc:node_up == bool 1))
+        expr: sum by (cluster) (hpc:node_cpu_logical:count * on (instance) (hpc:node_up == bool 1))
 
       - record: hpc:cluster_cpu_used:cores5m
-        expr: sum by (cluster) (hpc:node_cpu_logical:count * on (cluster, node) hpc:node_cpu_busy:ratio5m * on (cluster, node) (hpc:node_up == bool 1))
+        expr: sum by (cluster) (hpc:node_cpu_logical:count * on (instance) hpc:node_cpu_busy:ratio5m * on (instance) (hpc:node_up == bool 1))
 
       - record: hpc:cluster_memory_total:bytes
-        expr: sum by (cluster) (hpc:node_memory_total:bytes * on (cluster, node) (hpc:node_up == bool 1))
+        expr: sum by (cluster) (hpc:node_memory_total:bytes * on (instance) (hpc:node_up == bool 1))
 
       - record: hpc:cluster_memory_used:bytes
-        expr: sum by (cluster) (hpc:node_memory_used:bytes * on (cluster, node) (hpc:node_up == bool 1))
+        expr: sum by (cluster) (hpc:node_memory_used:bytes * on (instance) (hpc:node_up == bool 1))
 
       - record: hpc:partition_cpu_total:cores
-        expr: sum by (cluster, partition) (hpc:node_cpu_logical:count * on (cluster, node) (hpc:node_up == bool 1))
+        expr: sum by (cluster, partition) (hpc:node_cpu_logical:count * on (instance) (hpc:node_up == bool 1))
 
       - record: hpc:partition_cpu_used:cores5m
-        expr: sum by (cluster, partition) (hpc:node_cpu_logical:count * on (cluster, node) hpc:node_cpu_busy:ratio5m * on (cluster, node) (hpc:node_up == bool 1))
+        expr: sum by (cluster, partition) (hpc:node_cpu_logical:count * on (instance) hpc:node_cpu_busy:ratio5m * on (instance) (hpc:node_up == bool 1))
 
       - record: hpc:partition_memory_total:bytes
-        expr: sum by (cluster, partition) (hpc:node_memory_total:bytes * on (cluster, node) (hpc:node_up == bool 1))
+        expr: sum by (cluster, partition) (hpc:node_memory_total:bytes * on (instance) (hpc:node_up == bool 1))
 
       - record: hpc:partition_memory_used:bytes
-        expr: sum by (cluster, partition) (hpc:node_memory_used:bytes * on (cluster, node) (hpc:node_up == bool 1))
+        expr: sum by (cluster, partition) (hpc:node_memory_used:bytes * on (instance) (hpc:node_up == bool 1))
