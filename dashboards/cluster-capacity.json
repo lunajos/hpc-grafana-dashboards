@@ -1,19 +1,96 @@
 {
-  "annotations": {"list": []}, "description": "High-level online cluster capacity, consumption, and node profile conformance.", "editable": true, "graphTooltip": 1, "id": null,
+  "annotations": {"list": []},
+  "description": "Start-here CPU and memory capacity dashboard using standard node_exporter metrics directly.",
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
   "panels": [
-    {"id": 1, "type": "gauge", "title": "CPU in use", "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}, "targets": [{"refId": "A", "expr": "sum(hpc:cluster_cpu_used:cores5m{cluster=~\"$cluster\"}) / clamp_min(sum(hpc:cluster_cpu_total:cores{cluster=~\"$cluster\"}), 1)", "instant": true}], "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.70}, {"color": "orange", "value": 0.85}, {"color": "red", "value": 0.95}]}}, "overrides": []}, "options": {"showThresholdLabels": false, "showThresholdMarkers": true, "reduceOptions": {"calcs": ["lastNotNull"]}}},
-    {"id": 2, "type": "gauge", "title": "Memory in use", "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}, "targets": [{"refId": "A", "expr": "sum(hpc:cluster_memory_used:bytes{cluster=~\"$cluster\"}) / clamp_min(sum(hpc:cluster_memory_total:bytes{cluster=~\"$cluster\"}), 1)", "instant": true}], "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.70}, {"color": "orange", "value": 0.85}, {"color": "red", "value": 0.95}]}}, "overrides": []}, "options": {"showThresholdLabels": false, "showThresholdMarkers": true, "reduceOptions": {"calcs": ["lastNotNull"]}}},
-    {"id": 3, "type": "stat", "title": "Online CPU capacity", "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0}, "targets": [{"refId": "A", "expr": "sum(hpc:cluster_cpu_total:cores{cluster=~\"$cluster\"})", "instant": true}], "fieldConfig": {"defaults": {"unit": "cores"}, "overrides": []}, "options": {"graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}},
-    {"id": 4, "type": "stat", "title": "CPU cores currently busy", "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0}, "targets": [{"refId": "A", "expr": "sum(hpc:cluster_cpu_used:cores5m{cluster=~\"$cluster\"})", "instant": true}], "fieldConfig": {"defaults": {"unit": "cores"}, "overrides": []}, "options": {"graphMode": "area", "reduceOptions": {"calcs": ["lastNotNull"]}}},
-    {"id": 5, "type": "stat", "title": "Online memory capacity", "gridPos": {"h": 4, "w": 6, "x": 12, "y": 4}, "targets": [{"refId": "A", "expr": "sum(hpc:cluster_memory_total:bytes{cluster=~\"$cluster\"})", "instant": true}], "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []}, "options": {"graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}},
-    {"id": 6, "type": "stat", "title": "Memory currently used", "gridPos": {"h": 4, "w": 6, "x": 18, "y": 4}, "targets": [{"refId": "A", "expr": "sum(hpc:cluster_memory_used:bytes{cluster=~\"$cluster\"})", "instant": true}], "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []}, "options": {"graphMode": "area", "reduceOptions": {"calcs": ["lastNotNull"]}}},
-    {"id": 7, "type": "timeseries", "title": "CPU capacity and use over time", "gridPos": {"h": 9, "w": 12, "x": 0, "y": 8}, "targets": [{"refId": "A", "expr": "sum(hpc:cluster_cpu_total:cores{cluster=~\"$cluster\"})", "legendFormat": "online capacity"}, {"refId": "B", "expr": "sum(hpc:cluster_cpu_used:cores5m{cluster=~\"$cluster\"})", "legendFormat": "busy"}, {"refId": "C", "expr": "sum(hpc:cluster_cpu_total:cores{cluster=~\"$cluster\"}) - sum(hpc:cluster_cpu_used:cores5m{cluster=~\"$cluster\"})", "legendFormat": "idle"}], "fieldConfig": {"defaults": {"unit": "cores", "min": 0}, "overrides": []}},
-    {"id": 8, "type": "timeseries", "title": "Memory capacity and use over time", "gridPos": {"h": 9, "w": 12, "x": 12, "y": 8}, "targets": [{"refId": "A", "expr": "sum(hpc:cluster_memory_total:bytes{cluster=~\"$cluster\"})", "legendFormat": "online capacity"}, {"refId": "B", "expr": "sum(hpc:cluster_memory_used:bytes{cluster=~\"$cluster\"})", "legendFormat": "used"}, {"refId": "C", "expr": "sum(hpc:cluster_memory_total:bytes{cluster=~\"$cluster\"}) - sum(hpc:cluster_memory_used:bytes{cluster=~\"$cluster\"})", "legendFormat": "available"}], "fieldConfig": {"defaults": {"unit": "bytes", "min": 0}, "overrides": []}},
-    {"id": 9, "type": "bargauge", "title": "CPU utilization by partition", "gridPos": {"h": 9, "w": 8, "x": 0, "y": 17}, "targets": [{"refId": "A", "expr": "hpc:partition_cpu_used:cores5m{cluster=~\"$cluster\"} / hpc:partition_cpu_total:cores{cluster=~\"$cluster\"}", "legendFormat": "{{cluster}} / {{partition}}", "instant": true}], "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []}, "options": {"displayMode": "gradient", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"]}}},
-    {"id": 10, "type": "bargauge", "title": "Memory utilization by partition", "gridPos": {"h": 9, "w": 8, "x": 8, "y": 17}, "targets": [{"refId": "A", "expr": "hpc:partition_memory_used:bytes{cluster=~\"$cluster\"} / hpc:partition_memory_total:bytes{cluster=~\"$cluster\"}", "legendFormat": "{{cluster}} / {{partition}}", "instant": true}], "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []}, "options": {"displayMode": "gradient", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"]}}},
-    {"id": 11, "type": "table", "title": "Node profile mismatches", "gridPos": {"h": 9, "w": 8, "x": 16, "y": 17}, "targets": [{"refId": "A", "expr": "hpc:node_profile_match{cluster=~\"$cluster\"} == 0", "format": "table", "instant": true}], "fieldConfig": {"defaults": {}, "overrides": []}, "options": {"showHeader": true}}
+    {
+      "id": 1, "type": "gauge", "title": "CPU in use",
+      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+      "targets": [{"refId": "A", "expr": "1 - avg(rate(node_cpu_seconds_total{job=~\"$job_regex\",instance=~\"$host_regex\",mode=\"idle\"}[5m]))", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.70}, {"color": "orange", "value": 0.85}, {"color": "red", "value": 0.95}]}}, "overrides": []},
+      "options": {"showThresholdLabels": false, "showThresholdMarkers": true, "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "id": 2, "type": "gauge", "title": "Memory in use",
+      "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+      "targets": [{"refId": "A", "expr": "1 - sum(node_memory_MemAvailable_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"}) / clamp_min(sum(node_memory_MemTotal_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"}), 1)", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 0.70}, {"color": "orange", "value": 0.85}, {"color": "red", "value": 0.95}]}}, "overrides": []},
+      "options": {"showThresholdLabels": false, "showThresholdMarkers": true, "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "id": 3, "type": "stat", "title": "Logical CPU capacity",
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+      "targets": [{"refId": "A", "expr": "count(node_cpu_seconds_total{job=~\"$job_regex\",instance=~\"$host_regex\",mode=\"idle\"})", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "cores"}, "overrides": []},
+      "options": {"graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "id": 4, "type": "stat", "title": "Logical CPUs currently busy",
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+      "targets": [{"refId": "A", "expr": "sum(count by (instance) (node_cpu_seconds_total{job=~\"$job_regex\",instance=~\"$host_regex\",mode=\"idle\"}) * on (instance) (1 - avg by (instance) (rate(node_cpu_seconds_total{job=~\"$job_regex\",instance=~\"$host_regex\",mode=\"idle\"}[5m]))))", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "cores", "decimals": 1}, "overrides": []},
+      "options": {"graphMode": "area", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "id": 5, "type": "stat", "title": "Physical memory capacity",
+      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 4},
+      "targets": [{"refId": "A", "expr": "sum(node_memory_MemTotal_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"})", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []},
+      "options": {"graphMode": "none", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "id": 6, "type": "stat", "title": "Memory currently used",
+      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 4},
+      "targets": [{"refId": "A", "expr": "sum(node_memory_MemTotal_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"} - node_memory_MemAvailable_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"})", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []},
+      "options": {"graphMode": "area", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "id": 7, "type": "timeseries", "title": "CPU capacity and use over time",
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 8},
+      "targets": [
+        {"refId": "A", "expr": "count(node_cpu_seconds_total{job=~\"$job_regex\",instance=~\"$host_regex\",mode=\"idle\"})", "legendFormat": "online logical CPUs"},
+        {"refId": "B", "expr": "sum(count by (instance) (node_cpu_seconds_total{job=~\"$job_regex\",instance=~\"$host_regex\",mode=\"idle\"}) * on (instance) (1 - avg by (instance) (rate(node_cpu_seconds_total{job=~\"$job_regex\",instance=~\"$host_regex\",mode=\"idle\"}[5m]))))", "legendFormat": "busy logical CPUs"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "cores", "min": 0}, "overrides": []}
+    },
+    {
+      "id": 8, "type": "timeseries", "title": "Memory capacity and use over time",
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 8},
+      "targets": [
+        {"refId": "A", "expr": "sum(node_memory_MemTotal_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"})", "legendFormat": "online capacity"},
+        {"refId": "B", "expr": "sum(node_memory_MemTotal_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"} - node_memory_MemAvailable_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"})", "legendFormat": "used"},
+        {"refId": "C", "expr": "sum(node_memory_MemAvailable_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"})", "legendFormat": "available"}
+      ],
+      "fieldConfig": {"defaults": {"unit": "bytes", "min": 0}, "overrides": []}
+    },
+    {
+      "id": 9, "type": "bargauge", "title": "CPU utilization by node",
+      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 17},
+      "targets": [{"refId": "A", "expr": "1 - avg by (instance) (rate(node_cpu_seconds_total{job=~\"$job_regex\",instance=~\"$host_regex\",mode=\"idle\"}[5m]))", "legendFormat": "{{instance}}", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []},
+      "options": {"displayMode": "gradient", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    },
+    {
+      "id": 10, "type": "bargauge", "title": "Memory utilization by node",
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 17},
+      "targets": [{"refId": "A", "expr": "1 - node_memory_MemAvailable_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"} / node_memory_MemTotal_bytes{job=~\"$job_regex\",instance=~\"$host_regex\"}", "legendFormat": "{{instance}}", "instant": true}],
+      "fieldConfig": {"defaults": {"unit": "percentunit", "min": 0, "max": 1}, "overrides": []},
+      "options": {"displayMode": "gradient", "orientation": "horizontal", "reduceOptions": {"calcs": ["lastNotNull"]}}
+    }
   ],
-  "refresh": "30s", "schemaVersion": 41, "tags": ["hpc", "capacity", "profiles"],
-  "templating": {"list": [{"name": "cluster", "label": "Cluster", "type": "query", "datasource": {"type": "prometheus", "uid": "prometheus"}, "query": {"query": "label_values(hpc:node_up, cluster)"}, "includeAll": true, "multi": true, "allValue": ".*", "refresh": 1}]},
-  "time": {"from": "now-6h", "to": "now"}, "timezone": "browser", "title": "HPC / Cluster Capacity", "uid": "hpc-cluster-capacity", "version": 1
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "tags": ["hpc", "capacity", "node-exporter", "start-here"],
+  "templating": {"list": [
+    {"name": "job_regex", "label": "Prometheus job regex", "type": "textbox", "query": ".*", "current": {"text": ".*", "value": ".*"}},
+    {"name": "host_regex", "label": "Hostname / instance regex", "type": "textbox", "query": "cn[0-9]{4}(:9100)?", "current": {"text": "cn[0-9]{4}(:9100)?", "value": "cn[0-9]{4}(:9100)?"}}
+  ]},
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "browser",
+  "title": "HPC / Cluster Capacity (Start Here)",
+  "uid": "hpc-cluster-capacity",
+  "version": 2
 }

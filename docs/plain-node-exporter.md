@@ -53,3 +53,11 @@ pattern. It queries `slurm_node_info` directly and filters the Slurm `node` labe
 with a textbox regex. Its default is `cn[0-9]{4}`; unlike node_exporter's
 `instance`, a Slurm node name normally has no `:9100` suffix. The grid does not
 require the optional `hpc:slurm_node_state:code` recording rule.
+
+## Cluster capacity
+
+**HPC / Cluster Capacity (Start Here)** also queries standard node_exporter
+metrics directly. Its job and hostname regex fields have the same defaults as
+the fleet dashboard. Total CPU is the number of online logical CPUs; busy CPU is
+the per-node logical CPU count multiplied by its five-minute non-idle ratio.
+Memory totals use `MemTotal` and `MemAvailable` across matching instances.
