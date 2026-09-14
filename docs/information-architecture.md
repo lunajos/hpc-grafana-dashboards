@@ -72,6 +72,12 @@ and keeps the numeric temperature visible. The default thresholds are green
 below 70 C, yellow from 70 C, orange from 80 C, and red from 90 C; tune these by
 hardware class before using them as operational limits.
 
+The second current-state map keeps every individual temperature series instead
+of reducing by node. It combines `node_hwmon_temp_celsius` with
+`node_thermal_zone_temp`, labeling cells by instance and chip/sensor or thermal
+zone. NIC, SFP, NVMe, DIMM, and board temperatures appear automatically when the
+Linux driver publishes them under `/sys/class/hwmon` or `/sys/class/thermal`.
+
 ## Storage and fabric: answer “is data movement the bottleneck?”
 
 Organize rows by path rather than exporter:
