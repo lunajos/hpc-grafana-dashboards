@@ -66,6 +66,12 @@ Panels:
 Never average all sensors for alerting. Add `hardware_class` or `model` labels so
 thresholds can differ without dashboard forks.
 
+For the current state, use the Thermals dashboard's cell map. It reduces all
+hwmon sensors to the maximum per `instance`, renders one colored square per node,
+and keeps the numeric temperature visible. The default thresholds are green
+below 70 C, yellow from 70 C, orange from 80 C, and red from 90 C; tune these by
+hardware class before using them as operational limits.
+
 ## Storage and fabric: answer “is data movement the bottleneck?”
 
 Organize rows by path rather than exporter:

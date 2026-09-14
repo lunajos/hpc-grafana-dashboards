@@ -6,16 +6,37 @@
   "id": null,
   "panels": [
     {
+      "id": 5, "type": "stat", "title": "Current node temperature map",
+      "description": "One cell per node, colored by its hottest current hwmon sensor. Click a cell for node drill-down.",
+      "gridPos": {"h": 18, "w": 24, "x": 0, "y": 0},
+      "targets": [{"refId": "A", "expr": "sort(max by (instance) (node_hwmon_temp_celsius{job=~\"$job_regex\",instance=~\"$host_regex\"}))", "legendFormat": "{{instance}}", "instant": true}],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "decimals": 1,
+          "links": [{"title": "Open ${__field.name}", "url": "/d/hpc-node-exporter-node?var-job_regex=$job_regex&var-host_regex=$host_regex&var-instance=${__field.name}", "targetBlank": false}],
+          "thresholds": {"mode": "absolute", "steps": [
+            {"color": "green", "value": null},
+            {"color": "yellow", "value": 70},
+            {"color": "orange", "value": 80},
+            {"color": "red", "value": 90}
+          ]}
+        },
+        "overrides": []
+      },
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "orientation": "auto", "textMode": "name_and_value", "wideLayout": false, "reduceOptions": {"calcs": ["lastNotNull"], "values": false}}
+    },
+    {
       "id": 1, "type": "status-history", "title": "Maximum temperature by node",
       "description": "One row per matching instance. Empty when hwmon is unavailable or not visible to node_exporter.",
-      "gridPos": {"h": 15, "w": 24, "x": 0, "y": 0},
+      "gridPos": {"h": 15, "w": 24, "x": 0, "y": 18},
       "targets": [{"refId": "A", "expr": "max by (instance) (node_hwmon_temp_celsius{job=~\"$job_regex\",instance=~\"$host_regex\"})", "legendFormat": "{{instance}}"}],
       "fieldConfig": {"defaults": {"unit": "celsius", "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "yellow", "value": 70}, {"color": "orange", "value": 80}, {"color": "red", "value": 90}]}}, "overrides": []},
       "options": {"showValue": "never", "rowHeight": 0.65, "colWidth": 0.9, "legend": {"showLegend": true}}
     },
     {
       "id": 2, "type": "timeseries", "title": "Fleet thermal percentiles and maximum",
-      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 15},
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 33},
       "targets": [
         {"refId": "A", "expr": "quantile(0.50, max by (instance) (node_hwmon_temp_celsius{job=~\"$job_regex\",instance=~\"$host_regex\"}))", "legendFormat": "p50 node maximum"},
         {"refId": "B", "expr": "quantile(0.95, max by (instance) (node_hwmon_temp_celsius{job=~\"$job_regex\",instance=~\"$host_regex\"}))", "legendFormat": "p95 node maximum"},
@@ -25,14 +46,14 @@
     },
     {
       "id": 3, "type": "table", "title": "Hottest nodes now",
-      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 15},
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 33},
       "targets": [{"refId": "A", "expr": "topk(50, max by (instance) (node_hwmon_temp_celsius{job=~\"$job_regex\",instance=~\"$host_regex\"}))", "format": "table", "instant": true}],
       "fieldConfig": {"defaults": {"unit": "celsius"}, "overrides": []},
       "options": {"showHeader": true}
     },
     {
       "id": 4, "type": "timeseries", "title": "All sensors for selected node",
-      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 24},
+      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 42},
       "targets": [{"refId": "A", "expr": "node_hwmon_temp_celsius{job=~\"$job_regex\",instance=~\"$selected_instance\"}", "legendFormat": "{{instance}} / {{chip}} / {{sensor}}"}],
       "fieldConfig": {"defaults": {"unit": "celsius"}, "overrides": []}
     }
@@ -49,5 +70,5 @@
   "timezone": "browser",
   "title": "HPC / Thermals (Start Here)",
   "uid": "hpc-thermals",
-  "version": 2
+  "version": 3
 }
