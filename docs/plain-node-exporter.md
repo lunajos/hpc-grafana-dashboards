@@ -46,3 +46,10 @@ not assume that the scrape job is literally named `node-exporter`. Custom
 `cluster`, `partition`, `rack`, `node`, and `node_profile` labels remain optional
 enhancements for the topology-aware views.
 
+## Slurm grid
+
+**HPC / Slurm Node Cell Grid (Start Here)** follows the same compatibility
+pattern. It queries `slurm_node_info` directly and filters the Slurm `node` label
+with a textbox regex. Its default is `cn[0-9]{4}`; unlike node_exporter's
+`instance`, a Slurm node name normally has no `:9100` suffix. The grid does not
+require the optional `hpc:slurm_node_state:code` recording rule.
